@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="description" content="">
+  <title>内部文档</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #0b4f8a;
+      --primary-dark: #083a66;
+      --accent: #f97316;
+      --teal: #0d9488;
+      --success: #059669;
+      --danger: #dc2626;
+      --bg: #f8fafc;
+      --bg-alt: #eef2f7;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+      --radius: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--teal) 100%);
+      color: var(--white);
+      padding: 2.5rem 1.5rem 2rem;
+    }
+
+    .page-header .container { max-width: 1200px; margin: 0 auto; }
+
+    .page-header h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .page-header p { opacity: 0.9; font-size: 0.95rem; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .section { padding: 2rem 0; }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 1.25rem;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .note-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+      color: #92400e;
+    }
+
+    .note-box strong { color: #78350f; }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th, td {
+      padding: 0.65rem 0.75rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th:first-child, td:first-child { text-align: left; }
+    th { background: var(--bg-alt); font-weight: 600; color: var(--primary); }
+    tr:hover td { background: #f1f5f9; }
+
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .tag-student { background: #dbeafe; color: #1d4ed8; }
+    .tag-agent { background: #ffedd5; color: #c2410c; }
+    .tag-campus { background: #e0e7ff; color: #4338ca; }
+
+    .campus-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .campus-tab {
+      padding: 0.45rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .campus-tab.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .chart-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+    }
+
+    .chart-card h3 {
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 280px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .kpi-card .value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .kpi-card .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .kpi-card.highlight .value { color: var(--success); }
+
+    .positive { color: var(--success); font-weight: 600; }
+    .negative { color: var(--danger); }
+    .muted { color: var(--text-muted); font-size: 0.8rem; }
+
+    .scale-params {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .param-item label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .param-item input {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <h1>培训成本利润核算表</h1>
+    <p>SKYK 重庆机长 · 重庆苍茫无人机科技有限公司 · 核算基准：<strong>四类超视距</strong></p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="section">
+    <div class="note-box">
+      <strong>核算基准：四类超视距</strong>（学员培训费 ¥3,500 + 考试费 ¥700 = ¥4,200；代理培训费 ¥2,999 + 考试费 ¥700 = ¥3,699）。<br>
+      <strong>核算规则：</strong>员工销售提成按成交总额的 <strong>15%</strong> 结算；涉及退费退款须<strong>原路退还</strong>。
+      培训费不含住宿（涪陵校区标注包住宿/月，具体咨询校区校长）；考试费统一为理论 ¥240 + 实操 ¥460 = ¥700。
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">培训校区</h2>
+    <p class="section-desc">大足双桥、沙坪坝、涪陵三校区学员价与代理价一致，涪陵校区提供包住宿服务。</p>
+    <div class="campus-tabs" id="campusTabs">
+      <button class="campus-tab active" data-campus="dazu">重庆大足双桥培训点</button>
+      <button class="campus-tab" data-campus="shapingba">重庆沙坪坝培训点</button>
+      <button class="campus-tab" data-campus="fuling">重庆涪陵培训点（包住宿/月）</button>
+    </div>
+    <p id="campusNote" class="muted"></p>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">单人成本利润核算（四类超视距）</h2>
+    <p class="section-desc">四类超视距：学员培训费 ¥3,500，代理培训费 ¥2,999，考试费 ¥700。</p>
+    <div class="card">
+      <div class="table-wrap">
+        <table id="profitTable">
+          <thead>
+            <tr>
+              <th>课程类型</th>
+              <th>学员培训费</th>
+              <th>考试费</th>
+              <th>学员总价</th>
+              <th>代理培训费</th>
+              <th>代理总价</th>
+              <th>渠道差价</th>
+              <th>员工提成(15%)</th>
+              <th>公司净收(员工招)</th>
+              <th>代理利润/人</th>
+              <th>公司收(代理渠道)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">四类超视距 KPI 概览</h2>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">收入结构可视化（四类超视距）</h2>
+    <p class="section-desc">柱状图对比学员价与代理价；饼图展示员工直招收入分配；渠道对比展示公司净收差异。</p>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>四类超视距：学员价 vs 代理价（含考试费）</h3>
+        <div class="chart-container"><canvas id="barChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>单人收入分配比例（员工直招渠道）</h3>
+        <div class="chart-container"><canvas id="pieChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>公司净收对比（员工招 vs 代理渠道）</h3>
+        <div class="chart-container"><canvas id="lineChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>渠道差价与员工提成对比</h3>
+        <div class="chart-container"><canvas id="ratioChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">规模化运营核算（四类超视距）</h2>
+    <p class="section-desc">按四类超视距定价核算；每培训点每期最多容纳 20 人，一期通过率 30%，教员月薪 ¥4,500（不含营销团队）。</p>
+    <div class="card">
+      <div class="scale-params">
+        <div class="param-item">
+          <label>每期最大招生（人/期）</label>
+          <input type="number" id="maxStudents" value="20" min="1" max="100">
+        </div>
+        <div class="param-item">
+          <label>一期通过率（%）</label>
+          <input type="number" id="passRate" value="30" min="1" max="100">
+        </div>
+        <div class="param-item">
+          <label>教员工资（元/月/校区）</label>
+          <input type="number" id="teacherSalary" value="4500" min="0" step="100">
+        </div>
+        <div class="param-item">
+          <label>培训点数量</label>
+          <input type="number" id="campusCount" value="3" min="1" max="10">
+        </div>
+        <div class="param-item">
+          <label>每月开班期数（期/月/点）</label>
+          <input type="number" id="sessionsPerMonth" value="1" min="1" max="4">
+        </div>
+        <div class="param-item">
+          <label>招生填充率（%）</label>
+          <input type="number" id="fillRate" value="100" min="10" max="100">
+        </div>
+      </div>
+      <div class="kpi-grid" id="scaleKpi"></div>
+      <div class="table-wrap" style="margin-top:1rem;">
+        <table id="scaleTable">
+          <thead>
+            <tr>
+              <th>渠道</th>
+              <th>每期招生</th>
+              <th>通过人数</th>
+              <th>每期收入</th>
+              <th>每期成本(教员)</th>
+              <th>每期毛利</th>
+              <th>毛利率</th>
+              <th>月毛利(全校区)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="charts-grid" style="margin-top:1.5rem;">
+      <div class="chart-card">
+        <h3>四类超视距规模化月毛利（员工直招 vs 代理）</h3>
+        <div class="chart-container"><canvas id="scaleBarChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>四类超视距员工直招毛利率</h3>
+        <div class="chart-container"><canvas id="marginChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const EXAM_FEE = 240 + 460;
+const COMMISSION_RATE = 0.15;
+const COURSE = { id: 'c4-far', name: '四类超视距', studentTrain: 3500, agentTrain: 2999 };
+const CAMPUSES = {
+  dazu:      { name: '重庆大足双桥培训点', note: '不包住，具体咨询校区校长' },
+  shapingba: { name: '重庆沙坪坝培训点', note: '不包住，具体咨询校区校长' },
+  fuling:    { name: '重庆涪陵培训点', note: '包住宿/月，具体咨询校区校长' },
+};
+
+function calcCourse(c) {
+  const studentTotal = c.studentTrain + EXAM_FEE;
+  const agentTotal   = c.agentTrain + EXAM_FEE;
+  const channelDiff  = c.studentTrain - c.agentTrain;
+  const commission   = Math.round(studentTotal * COMMISSION_RATE);
+  const companyNetEmployee = studentTotal - commission;
+  const agentProfit  = channelDiff;
+  const companyAgent = agentTotal;
+  const marginEmployee = ((companyNetEmployee - 0) / studentTotal * 100);
+  return { ...c, studentTotal, agentTotal, channelDiff, commission, companyNetEmployee, agentProfit, companyAgent, marginEmployee };
+}
+
+const courseData = calcCourse(COURSE);
+function fmt(n) { return '¥' + n.toLocaleString('zh-CN'); }
+function pct(n) { return n.toFixed(1) + '%'; }
+
+function renderProfitTable() {
+  const c = courseData;
+  document.querySelector('#profitTable tbody').innerHTML = `
+    <tr>
+      <td><span class="tag tag-campus">${c.name}</span></td>
+      <td>${fmt(c.studentTrain)}</td>
+      <td>${fmt(EXAM_FEE)}</td>
+      <td><span class="tag tag-student">${fmt(c.studentTotal)}</span></td>
+      <td>${fmt(c.agentTrain)}</td>
+      <td><span class="tag tag-agent">${fmt(c.agentTotal)}</span></td>
+      <td class="positive">+${fmt(c.channelDiff)}</td>
+      <td class="negative">-${fmt(c.commission)}</td>
+      <td class="positive">${fmt(c.companyNetEmployee)}</td>
+      <td>${fmt(c.agentProfit)}</td>
+      <td>${fmt(c.companyAgent)}</td>
+    </tr>`;
+}
+
+function renderKPI() {
+  const c = courseData;
+  const items = [
+    { label: '学员总价', value: fmt(c.studentTotal) },
+    { label: '代理总价', value: fmt(c.agentTotal) },
+    { label: '员工提成(15%)', value: fmt(c.commission) },
+    { label: '公司净收(员工招)', value: fmt(c.companyNetEmployee), highlight: true },
+    { label: '代理渠道公司收', value: fmt(c.companyAgent) },
+    { label: '代理利润空间', value: fmt(c.agentProfit) },
+    { label: '员工招 vs 代理 差额', value: fmt(c.companyNetEmployee - c.companyAgent) },
+    { label: '员工招毛利率', value: pct(c.marginEmployee), highlight: true },
+  ];
+  document.getElementById('kpiGrid').innerHTML = items.map(i => `
+    <div class="kpi-card${i.highlight ? ' highlight' : ''}">
+      <div class="value">${i.value}</div>
+      <div class="label">${i.label}</div>
+    </div>`).join('');
+}
+
+let barChart, pieChart, lineChart, ratioChart, scaleBarChart, marginChart;
+const chartColors = {
+  student: 'rgba(11, 79, 138, 0.85)',
+  agent:   'rgba(249, 115, 22, 0.85)',
+  company: 'rgba(13, 148, 136, 0.85)',
+  comm:    'rgba(220, 38, 38, 0.75)',
+  diff:    'rgba(99, 102, 241, 0.75)',
+};
+
+function initCharts() {
+  const c = courseData;
+  barChart = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: { labels: ['学员总价', '代理总价'], datasets: [{ label: '四类超视距', data: [c.studentTotal, c.agentTotal], backgroundColor: [chartColors.student, chartColors.agent] }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '¥' + v } } } },
+  });
+  pieChart = new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: { labels: ['公司净收', '员工提成(15%)'], datasets: [{ data: [c.companyNetEmployee, c.commission], backgroundColor: [chartColors.company, chartColors.comm] }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
+  });
+  lineChart = new Chart(document.getElementById('lineChart'), {
+    type: 'bar',
+    data: { labels: ['员工直招', '代理渠道'], datasets: [{ label: '公司净收', data: [c.companyNetEmployee, c.companyAgent], backgroundColor: [chartColors.company, chartColors.agent] }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '¥' + v } } } },
+  });
+  ratioChart = new Chart(document.getElementById('ratioChart'), {
+    type: 'bar',
+    data: { labels: ['渠道差价(代理利润)', '员工提成(15%)'], datasets: [{ label: '金额', data: [c.channelDiff, c.commission], backgroundColor: [chartColors.diff, chartColors.comm] }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '¥' + v } } } },
+  });
+}
+
+function getScaleParams() {
+  return {
+    maxStudents:      +document.getElementById('maxStudents').value,
+    passRate:         +document.getElementById('passRate').value / 100,
+    teacherSalary:    +document.getElementById('teacherSalary').value,
+    campusCount:      +document.getElementById('campusCount').value,
+    sessionsPerMonth: +document.getElementById('sessionsPerMonth').value,
+    fillRate:         +document.getElementById('fillRate').value / 100,
+  };
+}
+
+function calcScale(c, channel, p) {
+  const enrolled = Math.round(p.maxStudents * p.fillRate);
+  const passed   = Math.round(enrolled * p.passRate);
+  const unitPrice = channel === 'employee' ? c.companyNetEmployee : c.companyAgent;
+  const revenuePerSession = unitPrice * enrolled;
+  const costPerSession = p.teacherSalary;
+  const grossPerSession = revenuePerSession - costPerSession;
+  const margin = revenuePerSession > 0 ? (grossPerSession / revenuePerSession * 100) : 0;
+  const monthlyGross = grossPerSession * p.campusCount * p.sessionsPerMonth;
+  return { enrolled, passed, revenuePerSession, costPerSession, grossPerSession, margin, monthlyGross };
+}
+
+function renderScale() {
+  const p = getScaleParams();
+  const c = courseData;
+  const rows = ['employee', 'agent'].map(ch => ({ ch, s: calcScale(c, ch, p) }));
+  document.querySelector('#scaleTable tbody').innerHTML = rows.map(({ ch, s }) => `
+    <tr>
+      <td>${ch === 'employee' ? '<span class="tag tag-student">员工直招</span>' : '<span class="tag tag-agent">代理渠道</span>'}</td>
+      <td>${s.enrolled} 人</td>
+      <td>${s.passed} 人</td>
+      <td>${fmt(s.revenuePerSession)}</td>
+      <td>${fmt(s.costPerSession)}</td>
+      <td class="positive">${fmt(s.grossPerSession)}</td>
+      <td>${pct(s.margin)}</td>
+      <td class="positive">${fmt(s.monthlyGross)}</td>
+    </tr>`).join('');
+
+  const sample = calcScale(c, 'employee', p);
+  const totalMonthlyRevenue = sample.revenuePerSession * p.campusCount * p.sessionsPerMonth;
+  const totalMonthlyCost = p.teacherSalary * p.campusCount * p.sessionsPerMonth;
+  const totalMonthlyGross = totalMonthlyRevenue - totalMonthlyCost;
+  const agentMonthly = calcScale(c, 'agent', p).monthlyGross;
+
+  document.getElementById('scaleKpi').innerHTML = [
+    { label: '每期每点招生', value: sample.enrolled + ' 人' },
+    { label: '每期每点通过', value: sample.passed + ' 人' },
+    { label: '三校区每期总招生', value: Math.round(sample.enrolled * p.campusCount) + ' 人' },
+    { label: '三校区每期总通过', value: Math.round(sample.passed * p.campusCount) + ' 人' },
+    { label: '月固定成本(教员)', value: fmt(totalMonthlyCost) },
+    { label: '月毛利(四类超视距·员工招)', value: fmt(totalMonthlyGross), highlight: true },
+    { label: '月毛利(四类超视距·代理)', value: fmt(agentMonthly), highlight: true },
+    { label: '月毛利率(员工招)', value: pct(totalMonthlyRevenue > 0 ? totalMonthlyGross / totalMonthlyRevenue * 100 : 0), highlight: true },
+  ].map(i => `
+    <div class="kpi-card${i.highlight ? ' highlight' : ''}">
+      <div class="value">${i.value}</div>
+      <div class="label">${i.label}</div>
+    </div>`).join('');
+
+  updateScaleCharts(p);
+}
+
+function updateScaleCharts(p) {
+  const c = courseData;
+  const empGross = calcScale(c, 'employee', p).monthlyGross;
+  const agtGross = calcScale(c, 'agent', p).monthlyGross;
+  const empMargin = calcScale(c, 'employee', p).margin;
+  const agtMargin = calcScale(c, 'agent', p).margin;
+
+  if (!scaleBarChart) {
+    scaleBarChart = new Chart(document.getElementById('scaleBarChart'), {
+      type: 'bar',
+      data: { labels: ['员工直招', '代理渠道'], datasets: [{ label: '月毛利（三校区合计）', data: [empGross, agtGross], backgroundColor: [chartColors.company, chartColors.agent] }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '¥' + v.toLocaleString() } } } },
+    });
+    marginChart = new Chart(document.getElementById('marginChart'), {
+      type: 'bar',
+      data: { labels: ['员工直招', '代理渠道'], datasets: [{ label: '毛利率(%)', data: [empMargin, agtMargin], backgroundColor: [chartColors.student, chartColors.agent] }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } },
+    });
+  } else {
+    scaleBarChart.data.datasets[0].data = [empGross, agtGross];
+    scaleBarChart.update();
+    marginChart.data.datasets[0].data = [empMargin, agtMargin];
+    marginChart.update();
+  }
+}
+
+document.getElementById('campusTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.campus-tab');
+  if (!btn) return;
+  document.querySelectorAll('.campus-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const c = CAMPUSES[btn.dataset.campus];
+  document.getElementById('campusNote').textContent = `${c.name} · ${c.note} · 学员价与代理价与其他校区一致`;
+});
+
+document.querySelectorAll('.scale-params input').forEach(inp => inp.addEventListener('input', renderScale));
+
+renderProfitTable();
+renderKPI();
+initCharts();
+renderScale();
+document.getElementById('campusNote').textContent =
+  `${CAMPUSES.dazu.name} · ${CAMPUSES.dazu.note} · 学员价与代理价与其他校区一致`;
+</script>
+
+</body>
+</html>
