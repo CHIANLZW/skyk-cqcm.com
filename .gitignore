@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+.cursor/
+
+# 原始素材已整理至 assets/，避免重复上传
+培训点宣传材料/
